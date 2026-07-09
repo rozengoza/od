@@ -98,7 +98,18 @@ def main():
         plots=True,
     )
 
-    print(f"\nTraining finished. Best weights at: {project_path}/{run_name}/weights/best.pt")
+    # Don't recompute this from run_name: Ultralytics silently auto-increments the
+    # folder name (helmet-baseline-yolov8s -> ...s2, ...s3, ...) whenever exist_ok=False
+    # and a folder from an earlier run already exists, so the name we passed in may not
+    # match what actually got used. Ask the trainer what it really saved to.
+    actual_save_dir = model.trainer.save_dir
+    print(f"\nTraining finished. Best weights at: {actual_save_dir}/weights/best.pt")
+    if str(actual_save_dir.name) != run_name:
+        print(
+            f"NOTE: run folder was auto-renamed from '{run_name}' to "
+            f"'{actual_save_dir.name}' because '{run_name}' already existed "
+            f"(likely from an earlier attempt). Use the path above, not '{run_name}'."
+        )
 
 
 if __name__ == "__main__":
