@@ -26,3 +26,9 @@ README.md
 archive/
 data_dataset.zip
 *.pt
+
+# Presentation inputs/outputs (personal screenshots, training artifacts, generated deck)
+presentation/results/
+presentation/screenshots/
+presentation/output/
+presentation/*.csv
