@@ -22,4 +22,6 @@ violations/
 
 docs/*
 README.md
-requirements.txt
+
+archive/
+data_dataset.zip

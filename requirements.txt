@@ -1,0 +1,14 @@
+ultralytics==8.2.103
+torch>=2.1.0
+torchvision>=0.16.0
+opencv-python-headless==4.10.0.84
+streamlit==1.38.0
+pandas==2.2.2
+numpy==1.26.4
+matplotlib==3.9.0
+seaborn==0.13.2
+pyyaml==6.0.1
+lxml==5.2.2
+tqdm==4.66.4
+kagglehub==0.3.3
+Pillow==10.4.0

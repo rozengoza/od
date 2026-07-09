@@ -13,6 +13,13 @@ Usage:
 
 Requires a Kaggle account (kagglehub will prompt for API credentials on first
 run, or read ~/.kaggle/kaggle.json / KAGGLE_USERNAME+KAGGLE_KEY env vars).
+
+If kagglehub can't reach api.kaggle.com (e.g. a local SSL-intercepting
+antivirus/proxy breaks the download), download the dataset zip manually
+from https://www.kaggle.com/datasets/andrewmvd/hard-hat-detection, extract
+it, and pass its path via --raw-dir to skip the network download entirely:
+
+    python data/prepare_dataset.py --raw-dir "C:/Users/you/Downloads/hard-hat-detection" --out data/dataset
 """
 import argparse
 import random
@@ -133,14 +140,26 @@ def main():
     parser.add_argument("--val-frac", type=float, default=0.1)
     parser.add_argument("--test-frac", type=float, default=0.1)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--raw-dir", type=str, default=None,
+        help="Path to an already-downloaded+extracted copy of the dataset "
+             "(must contain images/ and annotations/ folders somewhere under "
+             "it). Skips the kagglehub network download entirely.",
+    )
     args = parser.parse_args()
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    print("Downloading raw dataset from Kaggle (andrewmvd/hard-hat-detection)...")
-    raw_root = download_raw_dataset()
-    print(f"Raw dataset at: {raw_root}")
+    if args.raw_dir:
+        raw_root = Path(args.raw_dir)
+        if not raw_root.exists():
+            raise FileNotFoundError(f"--raw-dir does not exist: {raw_root}")
+        print(f"Using local raw dataset at: {raw_root}")
+    else:
+        print("Downloading raw dataset from Kaggle (andrewmvd/hard-hat-detection)...")
+        raw_root = download_raw_dataset()
+        print(f"Raw dataset at: {raw_root}")
 
     pairs = find_images_and_annotations(raw_root)
     print(f"Found {len(pairs)} image/annotation pairs")
