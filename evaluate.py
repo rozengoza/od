@@ -18,7 +18,11 @@ Examples:
         --out docs/results_comparison.csv
 """
 import argparse
+import sys
 from pathlib import Path
+
+# See train.py for why: blocks Ultralytics' optional W&B integration before import.
+sys.modules["wandb"] = None
 
 import pandas as pd
 from ultralytics import YOLO

@@ -16,7 +16,17 @@ Examples:
     python train.py --variant cbam     --data data/dataset/data.yaml --epochs 60
 """
 import argparse
+import sys
 from pathlib import Path
+
+# Block Ultralytics' optional Weights & Biases integration before it's ever imported.
+# We never asked for W&B logging, but Ultralytics auto-enables it whenever the wandb
+# package happens to be installed (it's pre-bundled in Colab's default image), and it
+# reuses our --project value as a wandb *project name*, which rejects "/" -- crashing
+# on the absolute path we deliberately pass (see the data/project path-resolution
+# fixes above/nearby). Poisoning sys.modules makes any `import wandb` fail cleanly,
+# regardless of whether the package is actually installed.
+sys.modules["wandb"] = None
 
 from ultralytics import YOLO
 
