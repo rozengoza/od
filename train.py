@@ -63,9 +63,18 @@ def main():
 
     run_name = args.name or f"helmet-{args.variant}-yolov8{args.model_size}"
 
+    # Ultralytics only resolves relative train/val/test paths against the yaml's own
+    # directory when the --data path itself is absolute; otherwise it falls back to
+    # its DATASETS_DIR setting, which is wrong here. Same issue with --project: a
+    # relative value gets joined onto Ultralytics' own RUNS_DIR setting instead of
+    # the current directory, silently doubling the path (e.g. runs/detect/runs/detect).
+    # Always pass absolute paths to sidestep both.
+    data_path = str(Path(args.data).resolve())
+    project_path = str(Path(args.project).resolve())
+
     model = build_model(args.variant, args.model_size)
     model.train(
-        data=args.data,
+        data=data_path,
         epochs=args.epochs,
         imgsz=args.imgsz,
         batch=args.batch,
@@ -73,13 +82,13 @@ def main():
         device=args.device or None,
         workers=args.workers,
         seed=args.seed,
-        project=args.project,
+        project=project_path,
         name=run_name,
         pretrained=True,
         plots=True,
     )
 
-    print(f"\nTraining finished. Best weights at: {args.project}/{run_name}/weights/best.pt")
+    print(f"\nTraining finished. Best weights at: {project_path}/{run_name}/weights/best.pt")
 
 
 if __name__ == "__main__":

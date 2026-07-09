@@ -64,10 +64,14 @@ def main():
     if len(labels) != len(args.weights):
         raise ValueError("--names must have the same length as --weights")
 
+    # See train.py for why this must be absolute (Ultralytics' relative-path
+    # fallback resolves against its DATASETS_DIR setting, not the yaml's folder).
+    data_path = str(Path(args.data).resolve())
+
     rows = []
     for label, weights in zip(labels, args.weights):
         print(f"\n=== Evaluating '{label}' ({weights}) on '{args.split}' split ===")
-        row = evaluate_one(weights, args.data, args.imgsz, args.split)
+        row = evaluate_one(weights, data_path, args.imgsz, args.split)
         row["run"] = label
         rows.append(row)
 
