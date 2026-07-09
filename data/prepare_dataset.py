@@ -121,8 +121,11 @@ def convert_and_split(pairs, out_dir: Path, val_frac: float, test_frac: float, s
 
 
 def write_data_yaml(out_dir: Path):
+    # Deliberately no "path:" key: Ultralytics resolves train/val/test relative to
+    # the yaml file's own directory when "path" is absent, which keeps this file
+    # portable if the dataset folder gets zipped and moved to another machine
+    # (e.g. local prep -> Colab). A baked-in absolute path would silently break there.
     yaml_content = (
-        f"path: {out_dir.resolve().as_posix()}\n"
         "train: train/images\n"
         "val: val/images\n"
         "test: test/images\n"
